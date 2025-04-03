@@ -42,10 +42,12 @@ class CoreDataViewModel: ObservableObject {
         
     }
     
-    func addDesenho(data: Data) {
+    func addDesenho(data: Data, tamanhoCanva: CGSize) {
         
         let newDesenho = DesenhoEntity(context: container.viewContext)
         newDesenho.desenho = data
+        newDesenho.canvaTamanhoX = tamanhoCanva.width
+        newDesenho.canvaTamanhoY = tamanhoCanva.height
         saveDesenho()
         print("desenho salvo com sucesso")
         
@@ -66,7 +68,7 @@ class CoreDataViewModel: ObservableObject {
 struct ContentView2: View {
     
     @StateObject var vm = CoreDataViewModel()
-    let canva = Canva()
+    let canva = Fase11()
     
     var body: some View {
         
@@ -75,11 +77,14 @@ struct ContentView2: View {
             VStack {
                 
                 PencilKitDrawing(canva: canva)
+                    .aspectRatio(8/5, contentMode: .fit)
+                    
                 
                 Button {
                     
                     print("tamanho do desenho no canva: ", canva.drawing.bounds.size)
-                    vm.addDesenho(data: canva.drawing.dataRepresentation())
+                    print(canva.bounds.size)
+                    vm.addDesenho(data: canva.drawing.dataRepresentation(), tamanhoCanva: canva.bounds.size)
                     
                 } label: {
                     Text("salvar desenho")

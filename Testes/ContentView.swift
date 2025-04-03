@@ -58,7 +58,6 @@ struct PencilKitDrawingView: UIViewRepresentable {
         canvasView.backgroundColor = .white
         let desenho = createDrawing(from: points)
         canvasView.drawing.append(createDrawing(from: points2))
-        canvasView.isDrawingEnabled = true
         canvasView.drawingPolicy = .anyInput
         canvasView.backgroundColor = .green
 

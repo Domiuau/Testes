@@ -10,6 +10,10 @@ import SwiftUI
 struct VisualizarDesenhos: View {
     
     let desenhos: [DesenhoEntity]
+    let columns = [
+        GridItem(.flexible()),
+        GridItem(.flexible())
+    ]
     
     var body: some View {
         
@@ -17,18 +21,20 @@ struct VisualizarDesenhos: View {
             
             VStack {
                 
-                ForEach(desenhos) {
-                    desenhoFeito in
-                    
-                    PencilKitDrawing(desenho: desenhoFeito.desenho, canva: Canva())
-                        .frame(width: 700, height: 550)
-                    
-                    
+                LazyVGrid(columns: columns, spacing: 16) {
+                    ForEach(desenhos) { desenhoFeito in
+                        GeometryReader { geometry in
+                            PencilKitDrawing(desenho: desenhoFeito.desenho, canva: Canva(), tamanhoOriginal: CGSize(width: desenhoFeito.canvaTamanhoX, height: desenhoFeito.canvaTamanhoY), tamanhoCanva: geometry.size)
+                                
+                        }
+                        .aspectRatio(8/5, contentMode: .fit)
+                        
+                    }
                 }
                 
                 Rectangle()
                 
-            }
+            }.padding()
         }
         
         
