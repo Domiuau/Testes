@@ -34,7 +34,7 @@ class CoreDataViewModel: ObservableObject {
         
         do {
             savedEntities = try container.viewContext.fetch(request)
-
+            
         } catch let error {
             print(error)
         }
@@ -78,12 +78,15 @@ struct ContentView2: View {
                 
                 PencilKitDrawing(canva: canva)
                     .aspectRatio(8/5, contentMode: .fit)
-                    
                 
                 Button {
                     
                     print("tamanho do desenho no canva: ", canva.drawing.bounds.size)
                     print(canva.bounds.size)
+                                        
+                    print(canva.drawing.dataRepresentation().base64EncodedString())
+                    print("tamango original: ", canva.bounds.size)
+                    
                     vm.addDesenho(data: canva.drawing.dataRepresentation(), tamanhoCanva: canva.bounds.size)
                     
                 } label: {
@@ -102,23 +105,42 @@ struct ContentView2: View {
                                 .fill(.black)
                         )
                 }
-
+                
                 Button {
                     
-                    canva.tool = PKInkingTool(.marker, color: UIColor.systemPink, width: 30)
-
+                    guard let url = Bundle.main.url(forResource: "rabiscos", withExtension: "json") else {
+                        print("Arquivo não encontrado")
+                        return
+                    }
+                    
+                    do {
+                        let data = try Data(contentsOf: url)
+                        let decoded = try JSONDecoder().decode([String].self, from: data)
+                        
+                        if let decodedData = Data(base64Encoded: decoded[0], options: .ignoreUnknownCharacters) {
+                           
+                                self.canva.drawing = try PKDrawing(data: decodedData)
+                            
+                        }
+                        
+                    } catch {
+                        print("Erro ao carregar JSON: \(error)")
+                    }
+                    
+                    
                     
                 } label: {
-                    Text("trocar cor")
+                    Text("imprimir json")
                 }
-
-
+                
+                
+                
                 
             }
             
         }
         
-
+        
         
     }
 }

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import PencilKit
 
 struct VisualizarDesenhos: View {
     
@@ -14,34 +15,88 @@ struct VisualizarDesenhos: View {
         GridItem(.flexible()),
         GridItem(.flexible())
     ]
+    @State var stringData: String = ""
+    @State var tamanhoX: Double = 0
+    @State var tamanhoY: Double = 0
+
+    @State private var isSheetPresented = false
+
+    
+    var body: some View {
+        
+
+        
+        NavigationStack {
+            
+            ScrollView {
+                
+                VStack {
+                    
+                    LazyVGrid(columns: columns, spacing: 16) {
+                        ForEach(desenhos) { desenhoFeito in
+                            GeometryReader { geometry in
+                                PencilKitDrawing(desenho: desenhoFeito.desenho, canva: PKCanvasView(), tamanhoOriginal: CGSize(width: desenhoFeito.canvaTamanhoX, height: desenhoFeito.canvaTamanhoY), tamanhoCanva: geometry.size)
+                                    .onTapGesture {
+                                        
+                                        
+                                        
+                                        stringData = desenhoFeito.desenho!.base64EncodedString()
+                                        tamanhoX = desenhoFeito.canvaTamanhoX
+                                        tamanhoY = desenhoFeito.canvaTamanhoY
+                                        
+                                        print()
+                                        print(stringData)
+                                        print("width: ", tamanhoX, "height: ", tamanhoY)
+                                        print()
+                                        
+                                        
+                                        
+                                    }
+                                    .sheet(isPresented: $isSheetPresented) {
+                                        MinhaSheetView(stringData: stringData, tamanhoX: tamanhoX, tamanhoY: tamanhoY)
+                                                }
+                                    
+                            }
+                            .aspectRatio(8/5, contentMode: .fit)
+                            
+                            
+                        }
+                    }
+                    
+                    Rectangle()
+                    
+                }.padding()
+            }
+        }
+    }
+    
+
+}
+
+struct MinhaSheetView: View {
+    
+    @State var stringData: String
+    @State var tamanhoX: Double
+    @State var tamanhoY: Double
     
     var body: some View {
         
         ScrollView {
             
-            VStack {
+            VStack(spacing: 20) {
                 
-                LazyVGrid(columns: columns, spacing: 16) {
-                    ForEach(desenhos) { desenhoFeito in
-                        GeometryReader { geometry in
-                            PencilKitDrawing(desenho: desenhoFeito.desenho, canva: Canva(), tamanhoOriginal: CGSize(width: desenhoFeito.canvaTamanhoX, height: desenhoFeito.canvaTamanhoY), tamanhoCanva: geometry.size)
-                                
-                        }
-                        .aspectRatio(8/5, contentMode: .fit)
-                        
-                    }
+                Text("width: \(tamanhoX) height: \(tamanhoY)")
+                Text("data: " + stringData)
+                
+                
                 }
-                
-                Rectangle()
-                
-            }.padding()
+        
         }
-        
-        
-        
-        
+        .padding()
     }
 }
+
+
 
 #Preview {
     VisualizarDesenhos(desenhos: [])

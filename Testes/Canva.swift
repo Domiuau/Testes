@@ -80,6 +80,7 @@ struct PencilKitDrawing: UIViewRepresentable {
         self.canvasView = canva
         self.tamanhoOriginal = tamanhoOriginal
         self.tamanhoCanva = tamanhoCanva
+        canva.isUserInteractionEnabled = false
         print("tamanho canvinha geometry ", tamanhoCanva)
     }
  
