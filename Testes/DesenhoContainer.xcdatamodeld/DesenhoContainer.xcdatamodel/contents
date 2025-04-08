@@ -4,5 +4,6 @@
         <attribute name="canvaTamanhoX" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="canvaTamanhoY" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="desenho" optional="YES" attributeType="Binary"/>
+        <attribute name="usadoNoPrincipal" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
     </entity>
 </model>

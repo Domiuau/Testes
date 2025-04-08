@@ -28,6 +28,21 @@ class CoreDataViewModel: ObservableObject {
         fetchDesenho()
     }
     
+    func marcarComoUtilizado(desenho: DesenhoEntity, isUsado: Bool) {
+        print("usado: ", isUsado)
+        desenho.usadoNoPrincipal = isUsado
+        saveDesenho()
+
+        
+    }
+    
+    func deleteDesenho(desenho: DesenhoEntity) {
+        
+        container.viewContext.delete(desenho)
+        saveDesenho()
+        
+    }
+    
     func fetchDesenho() {
         
         let request = NSFetchRequest<DesenhoEntity>(entityName: "DesenhoEntity")
@@ -71,74 +86,109 @@ struct ContentView2: View {
     let canva = Fase11()
     
     var body: some View {
-        
-        NavigationStack {
+
             
-            VStack {
+            NavigationStack {
                 
-                PencilKitDrawing(canva: canva)
-                    .aspectRatio(8/5, contentMode: .fit)
-                
-                Button {
+                VStack {
                     
-                    print("tamanho do desenho no canva: ", canva.drawing.bounds.size)
-                    print(canva.bounds.size)
-                                        
-                    print(canva.drawing.dataRepresentation().base64EncodedString())
-                    print("tamango original: ", canva.bounds.size)
-                    
-                    vm.addDesenho(data: canva.drawing.dataRepresentation(), tamanhoCanva: canva.bounds.size)
-                    
-                } label: {
-                    Text("salvar desenho")
-                }
-                
-                Text("Quantidade de desenhos salvos \(vm.savedEntities.count)")
-                NavigationLink {
-                    VisualizarDesenhos(desenhos: vm.savedEntities)
-                } label: {
-                    Text("Visualizar desenhos")
-                        .foregroundColor(.white)
+                    PencilKitDrawing(canva: canva)
+                        .aspectRatio(8/5, contentMode: .fit)
+                        .shadow(radius: 10)
                         .padding()
-                        .background(
-                            RoundedRectangle(cornerRadius: 20)
-                                .fill(.black)
-                        )
-                }
-                
-                Button {
                     
-                    guard let url = Bundle.main.url(forResource: "rabiscos", withExtension: "json") else {
-                        print("Arquivo não encontrado")
-                        return
-                    }
-                    
-                    do {
-                        let data = try Data(contentsOf: url)
-                        let decoded = try JSONDecoder().decode([String].self, from: data)
+                    HStack {
                         
-                        if let decodedData = Data(base64Encoded: decoded[0], options: .ignoreUnknownCharacters) {
-                           
-                                self.canva.drawing = try PKDrawing(data: decodedData)
+                        Spacer()
+                       
+                        Button {
                             
+                            print("tamanho do desenho no canva: ", canva.drawing.bounds.size)
+                            print(canva.bounds.size)
+                                                
+                            print(canva.drawing.dataRepresentation().base64EncodedString())
+                            print("tamango original: ", canva.bounds.size)
+                            
+                            vm.addDesenho(data: canva.drawing.dataRepresentation(), tamanhoCanva: canva.bounds.size)
+                            
+                            canva.drawing = PKDrawing()
+                            
+                        } label: {
+                            Text("salvar desenho")
+                                .bold()
                         }
                         
-                    } catch {
-                        print("Erro ao carregar JSON: \(error)")
+                        Spacer()
+                        
+                        Text("Quantidade de desenhos salvos \(vm.savedEntities.count)")
+                        
+                        Spacer()
+                        
+                        Button {
+                            canva.drawing = PKDrawing()
+                        } label: {
+                            Text("limpar canvas")
+                                .foregroundColor(Color.red)
+                                .bold()
+                        }
+                        
+                        Spacer()
+
+                        
+                        
                     }
                     
                     
+                    NavigationLink {
+                        VisualizarDesenhos(desenhos: vm.savedEntities, vm: vm)
+                            .shadow(radius: 10)
+                    } label: {
+                        Text("Visualizar desenhos")
+                            .foregroundColor(.white)
+                            .padding()
+                            .background(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .fill(.black)
+                            )
+                    }
                     
-                } label: {
-                    Text("imprimir json")
+    //                Button {
+    //
+    //                    guard let url = Bundle.main.url(forResource: "rabiscos", withExtension: "json") else {
+    //                        print("Arquivo não encontrado")
+    //                        return
+    //                    }
+    //
+    //                    do {
+    //                        let data = try Data(contentsOf: url)
+    //                        let decoded = try JSONDecoder().decode([String].self, from: data)
+    //
+    //                        if let decodedData = Data(base64Encoded: decoded[0], options: .ignoreUnknownCharacters) {
+    //
+    //                                self.canva.drawing = try PKDrawing(data: decodedData)
+    //
+    //                        }
+    //
+    //                    } catch {
+    //                        print("Erro ao carregar JSON: \(error)")
+    //                    }
+    //
+    //
+    //
+    //                } label: {
+    //                    Text("imprimir json")
+    //                }
+    //                .disabled(true)
+    //
+    //
+    //
+    //
                 }
                 
-                
-                
-                
-            }
-            
+         
         }
+        
+
         
         
         
