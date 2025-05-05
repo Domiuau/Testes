@@ -3,6 +3,7 @@
     <entity name="DesenhoEntity" representedClassName="DesenhoEntity" syncable="YES" codeGenerationType="class">
         <attribute name="canvaTamanhoX" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="canvaTamanhoY" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="classificacao" optional="YES" attributeType="String"/>
         <attribute name="desenho" optional="YES" attributeType="Binary"/>
         <attribute name="usadoNoPrincipal" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
     </entity>

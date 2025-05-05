@@ -32,7 +32,7 @@ struct VisualizarDesenhos: View {
             
             ScrollView {
                 
-                VStack {
+                VStack(alignment: .leading) {
                     
                     LazyVGrid(columns: columns, spacing: 16) {
                         ForEach(desenhos) { desenhoFeito in
@@ -43,16 +43,26 @@ struct VisualizarDesenhos: View {
                                 } label: {
                                     ZStack(alignment: .topLeading) {
                                         
-                                        Circle()
-                                            .fill(desenhoFeito.usadoNoPrincipal ? Color.green : Color.red)
-                                            .frame(width: 50, height: 50)
-                                            .zIndex(1)
+                                        VStack {
+                                            Circle()
+                                                .fill(desenhoFeito.usadoNoPrincipal ? Color.green : Color.red)
+                                                .frame(width: 50, height: 50)
+                                                
+                                            Spacer()
+                                            
+                                            Text(desenhoFeito.classificacao ?? "sem classificacao")
+                                                .foregroundColor(desenhoFeito.classificacao == nil ? .orange : .blue)
+                                        }
+                                        .zIndex(1)
+                                        
+                                        
                                         
                                         PencilKitDrawing(desenho: desenhoFeito.desenho, canva: PKCanvasView(), tamanhoOriginal: CGSize(width: desenhoFeito.canvaTamanhoX, height: desenhoFeito.canvaTamanhoY), tamanhoCanva: geometry.size)
                                             .zIndex(0)
                                         
                                         
                                     }
+                                    .padding(4)
                                 }
                                 
                                 
@@ -84,23 +94,42 @@ struct ExibirDetalhesDesenho: View {
     @State var vm: CoreDataViewModel
     @State private var showDeleteConfirmation = false
     @Environment(\.dismiss) var dismiss
-
+    @State var dificuldades = ["muito facil", "medio", "dificil", "muito dificil"]
+    @State var diffSelecionada: String
+    
     init(desenhoEntity: DesenhoEntity, vm: CoreDataViewModel) {
         self.desenhoEntity = desenhoEntity
         usadoNoPrincipal = desenhoEntity.usadoNoPrincipal
+        diffSelecionada = desenhoEntity.classificacao ?? "sem classificacao"
         self.vm = vm
     }
     
     var body: some View {
         ScrollView {
             VStack(alignment: .leading) {
+                
+                
                 Toggle("Utilizado no principal", isOn: $usadoNoPrincipal)
                     .onChange(of: usadoNoPrincipal) { novoValor in
                         vm.marcarComoUtilizado(desenho: desenhoEntity, isUsado: novoValor)
                     }
+                
+                Picker("Dificuldade", selection: $diffSelecionada) {
+                    ForEach(dificuldades, id: \.self) {
+                        diff in
+                        Text(diff)
+                    }
+                }
+                .onChange(of: diffSelecionada) { oldValue, newValue in
+                    vm.colocarClassficacao(desenho: desenhoEntity, classificacao: newValue)
+                }
+                
                 Text("width: \(desenhoEntity.canvaTamanhoX) height: \(desenhoEntity.canvaTamanhoY)")
                     .bold()
                     .font(.title)
+                
+                
+                
                 if let desenhoData = desenhoEntity.desenho {
                     Text(desenhoData.base64EncodedString())
                 } else {
@@ -116,13 +145,13 @@ struct ExibirDetalhesDesenho: View {
             }
         }
         .navigationBarItems(trailing:
-            Button {
-                showDeleteConfirmation = true
-            } label: {
-                Text("Deletar")
-                    .foregroundColor(.red)
-                    .bold()
-            }
+                                Button {
+            showDeleteConfirmation = true
+        } label: {
+            Text("Deletar")
+                .foregroundColor(.red)
+                .bold()
+        }
         )
         .alert(isPresented: $showDeleteConfirmation) {
             Alert(

@@ -101,7 +101,7 @@ struct PencilKitDrawing: UIViewRepresentable {
         // Configura o canvas
         canvasView.backgroundColor = .white
         canvasView.drawingPolicy = .anyInput
-        canvasView.tool = PKInkingTool(.monoline, color: .black, width: 2)
+        canvasView.tool = PKInkingTool(.monoline, color: .gray, width: 2)
         
         // Se houver um desenho, aplica a transformação inicial
         if let desenho = desenho {
